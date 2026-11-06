@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   try {
     const upstream = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents, generationConfig: { temperature: 0.55, maxOutputTokens: 350 } })
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: 'You are the World Automates website assistant. Help visitors understand website design, branding, apps, AI and business automation. Be concise, friendly and honest. Do not invent prices, client results, delivery timelines or claim a booking is confirmed. For quotes or project commitments, ask them to submit the enquiry form.' }] }, contents, generationConfig: { temperature: 0.55, maxOutputTokens: 350 } })
     });
     const data = await upstream.json();
     if (!upstream.ok) return res.status(502).json({ error: 'The assistant is temporarily unavailable. Please try again later.' });
