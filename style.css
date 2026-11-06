@@ -137,3 +137,29 @@ body.dash{margin:0;min-height:100vh;display:flex;background:#07111f;color:#f3f7f
 /* Sticky primary navigation: remains available while browsing the homepage */
 .home3d>header{position:sticky;top:0;z-index:1000;width:100%;max-width:none;margin:0;padding:0 max(32px,calc((100% - 1240px)/2));background:rgba(3,11,23,.88);border-bottom:1px solid #20334c;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 @media(max-width:700px){.home3d>header{padding:0 18px}}
+
+/* Final responsive header + real photography */
+.home3d>header{display:flex;align-items:center;justify-content:space-between;min-height:76px;height:76px;gap:18px}
+.home3d>header .logo{flex-shrink:0;display:flex;align-items:center;gap:9px}
+.home3d>header nav{display:flex;align-items:center;gap:clamp(14px,2.5vw,34px);white-space:nowrap}
+.home3d .menu-toggle{display:none}
+.home3d .service-image{display:block;width:100%;height:135px;object-fit:cover;border-radius:8px;margin:0 0 18px}
+.home3d .cards article{overflow:hidden}
+.home3d .work-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.48;mix-blend-mode:luminosity;transition:transform .45s ease,opacity .45s ease}
+.home3d .works article:hover .work-image{transform:scale(1.06);opacity:.68}
+.home3d .works article>small,.home3d .works article>b{z-index:2;position:relative}
+.home3d .works article>b{position:absolute}
+.home3d .food:after,.home3d .fashion:after,.home3d .digital:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#03101c22 0%,#03101c08 35%,#03101cbb 100%);z-index:1;pointer-events:none}
+.home3d .mock{z-index:2}
+@media(max-width:700px){
+ .home3d>header{height:68px;min-height:68px;padding:0 18px}
+ .home3d .menu-toggle{display:flex;width:42px;height:42px;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px solid #29445f;border-radius:50%;background:#0b1c31;color:#fff;cursor:pointer;z-index:1002}
+ .home3d .menu-toggle span{display:block;width:17px;height:2px;border-radius:2px;background:#eef7ff}
+ .home3d>header nav{display:none;position:absolute;top:68px;left:12px;right:12px;padding:18px;background:#0a1b30;border:1px solid #29445f;border-radius:12px;box-shadow:0 18px 40px #000b;flex-direction:column;align-items:stretch;gap:0;white-space:normal}
+ .home3d>header nav.open{display:flex}
+ .home3d>header nav a{display:block;padding:12px 8px;font-size:14px;color:#e4edf8!important}
+ .home3d>header nav a.active:after{display:none}
+ .home3d>header nav .pill{margin-top:8px;text-align:center;padding:12px}
+ .home3d .service-image{height:150px;margin-bottom:15px}
+ .home3d .works article{min-height:245px}
+}
