@@ -84,3 +84,50 @@
  .compare-visual{min-height:245px;padding:14px}
  .footer-links{grid-template-columns:1fr!important}
 }
+
+
+/* Compact homepage pass — reduce excess vertical space */
+.wa-hero{padding-top:54px;padding-bottom:58px;min-height:0}
+.services-section,.work-section,.process-section{padding-top:72px;padding-bottom:76px}
+.difference-section{padding-top:64px;padding-bottom:68px}
+.about-section{padding-top:66px;padding-bottom:66px}
+.contact-section{padding-top:68px;padding-bottom:68px}
+.section-head{margin-bottom:26px}
+.service-grid,.work-grid{gap:14px}
+.service-card>img{height:150px}
+.service-card-body{padding:16px 17px 18px}
+.service-card p{min-height:0;margin-bottom:12px}
+.work-card{height:285px}
+.process-grid{margin-top:30px}
+.footer-main{padding-top:34px;padding-bottom:34px;gap:28px}
+.footer-bottom{padding-top:13px;padding-bottom:13px}
+
+/* Keep both comparison photos clearly visible behind the content */
+.compare-visual{position:relative;isolation:isolate;min-height:320px;overflow:hidden}
+.compare-visual .compare-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.72;filter:none;z-index:0}
+.compare-visual .compare-photo-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(135deg,#eaf5f8a8,#dceaf2a8)}
+.compare-visual .mini-window{position:relative;z-index:2;width:min(420px,100%);margin:auto}
+.compare-board.after .compare-visual .compare-photo-overlay{background:linear-gradient(135deg,#e7f8efa8,#d6f1e6a8)}
+.compare-board.after .compare-visual .compare-photo{opacity:.72}
+
+/* Cleaner footer hierarchy */
+.footer-main{grid-template-columns:.8fr 1fr 1.25fr;gap:34px}
+.footer-main>p{max-width:280px;line-height:1.8}
+.footer-links{gap:22px}
+.footer-links a,.footer-links span{line-height:1.6}
+@media(max-width:900px){
+ .wa-hero{padding-top:42px;padding-bottom:48px}
+ .services-section,.work-section,.process-section{padding-top:58px;padding-bottom:62px}
+ .difference-section,.about-section,.contact-section{padding-top:56px;padding-bottom:58px}
+ .compare-visual{min-height:280px}
+ .footer-main{grid-template-columns:1fr!important;gap:16px}
+}
+@media(max-width:650px){
+ .wa-hero{padding-top:34px;padding-bottom:40px}
+ .services-section,.work-section,.process-section{padding-top:48px;padding-bottom:52px}
+ .difference-section,.about-section,.contact-section{padding-top:48px;padding-bottom:50px}
+ .service-card>img{height:170px}
+ .work-card,.work-card:last-child{height:245px}
+ .compare-visual{min-height:245px;padding:14px}
+ .footer-main{padding-top:28px;padding-bottom:28px}
+}
