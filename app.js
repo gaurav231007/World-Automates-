@@ -3,8 +3,26 @@ const menu=document.getElementById('menu'),nav=document.getElementById('nav');
 if(menu&&nav){menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Close navigation':'Open navigation')});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false')}))}
 const compareButtons=document.querySelectorAll('.compare-tab'),board=document.querySelector('.compare-board');
 const compareData={before:{label:'BEFORE',title:'Important enquiries get buried.',desc:'Messages arrive across different channels. Someone has to read each one, copy details, remember to reply and keep track manually.',items:['Slow or missed replies','Details copied by hand','Follow-ups depend on memory'],mode:'before'},after:{label:'WITH AUTOMATION',title:'A clearer path from enquiry to follow-up.',desc:'A connected workflow can capture the enquiry, organise the details and prepare the next action — with a person reviewing important steps.',items:['Enquiries gathered in one place','Details organised automatically','A clear follow-up for the team'],mode:'after'}};
-compareButtons.forEach(btn=>btn.addEventListener('click',()=>{const d=compareData[btn.dataset.view];if(!d)return;compareButtons.forEach(b=>b.classList.toggle('active',b===btn));board.classList.toggle('after',d.mode==='after');document.getElementById('compare-label').textContent=d.label;document.getElementById('compare-title').textContent=d.title;document.getElementById('compare-desc').textContent=d.desc;document.getElementById('compare-list').innerHTML=d.items.map(x=>'<li>'+x+'</li>').join('');document.getElementById('compare-visual').innerHTML=d.mode==='after'?'<div class="mini-window"><div class="window-bar"><i></i><i></i><i></i><span>CONNECTED WORKFLOW</span></div><div class="message"><b>✓ Enquiry captured</b><small>Website · Just now</small><p>Contact details added to the lead list.</p></div><div class="message"><b>✓ Details organised</b><small>Service · Website enquiry</small><p>Request categorised and assigned for review.</p></div><div class="manual-note">Next step prepared · Human review before action</div></div>':'<div class="mini-window"><div class="window-bar"><i></i><i></i><i></i><span>ENQUIRY WORKFLOW</span></div><div class="message incoming"><b>New enquiry received</b><small>Website · Just now</small><p>Hi, I’d like to know more about your services.</p></div><div class="message incoming faded"><b>Another message</b><small>WhatsApp · 12 min ago</small><p>Can someone share the pricing?</p></div><div class="manual-note">Needs a person to sort, reply and follow up</div></div>'}));
-});
+function renderCompareVisual(view){
+ const isAfter=view==='after';
+ const image=isAfter
+  ? 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=90'
+  : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=90';
+ const windowMarkup=isAfter
+  ? '<div class="mini-window"><div class="window-bar"><i></i><i></i><i></i><span>CONNECTED WORKFLOW</span></div><div class="message"><b>✓ Enquiry captured</b><small>Website · Just now</small><p>Contact details added to the lead list.</p></div><div class="message"><b>✓ Details organised</b><small>Service · Website enquiry</small><p>Request categorised and assigned for review.</p></div><div class="manual-note">Next step prepared · Human review before action</div></div>'
+  : '<div class="mini-window"><div class="window-bar"><i></i><i></i><i></i><span>ENQUIRY WORKFLOW</span></div><div class="message incoming"><b>New enquiry received</b><small>Website · Just now</small><p>Hi, I’d like to know more about your services.</p></div><div class="message incoming faded"><b>Another message</b><small>WhatsApp · 12 min ago</small><p>Can someone share the pricing?</p></div><div class="manual-note">Needs a person to sort, reply and follow up</div></div>';
+ document.getElementById('compare-visual').innerHTML='<img class="compare-photo" src="'+image+'" alt="'+(isAfter?'Organised digital workflow on a laptop':'Laptop workspace showing manual enquiry handling')+'"><div class="compare-photo-overlay"></div>'+windowMarkup;
+}
+compareButtons.forEach(btn=>btn.addEventListener('click',()=>{
+ const d=compareData[btn.dataset.view];if(!d)return;
+ compareButtons.forEach(b=>b.classList.toggle('active',b===btn));
+ board.classList.toggle('after',d.mode==='after');
+ document.getElementById('compare-label').textContent=d.label;
+ document.getElementById('compare-title').textContent=d.title;
+ document.getElementById('compare-desc').textContent=d.desc;
+ document.getElementById('compare-list').innerHTML=d.items.map(x=>'<li>'+x+'</li>').join('');
+ renderCompareVisual(btn.dataset.view);
+}));
 const form=document.getElementById('form');if(form)form.addEventListener('submit',e=>{e.preventDefault();const d=new FormData(form);const subject=encodeURIComponent('World Automates project enquiry');const body=encodeURIComponent('Name: '+d.get('name')+'\nEmail: '+d.get('email')+'\nPhone: '+d.get('phone')+'\nService: '+d.get('service')+'\nDetails: '+d.get('details'));const recipient='REPLACE_WITH_REAL_EMAIL';if(recipient.startsWith('REPLACE_')){document.getElementById('msg').textContent='Form preview only. Add your business email in app.js to receive enquiries.';return}window.location.href='mailto:'+recipient+'?subject='+subject+'&body='+body;document.getElementById('msg').textContent='Your email app is opening with the enquiry details.'});
 
 /* Chat demo behaviour. Replace the local reply handler with a backend API call later.
