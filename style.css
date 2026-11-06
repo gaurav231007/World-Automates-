@@ -211,3 +211,20 @@ body.dash{margin:0;min-height:100vh;display:flex;background:#07111f;color:#f3f7f
  .home3d .works article{height:235px;min-height:235px}
  .home3d .section{padding-left:0;padding-right:0}
 }
+
+/* Correct the portfolio story and the four-step process on phone/tablet */
+@media(max-width:900px){
+ .home3d .works{grid-template-columns:minmax(0,1fr)!important;gap:18px!important}
+ .home3d .works article{width:100%;min-width:0;height:250px;min-height:250px}
+ .home3d .steps{grid-template-columns:minmax(0,1fr)!important;gap:0!important}
+ .home3d .steps article{display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;align-items:start;column-gap:12px;min-width:0;padding:18px 4px;border-top:1px solid #29445f}
+ .home3d .steps article>b{grid-row:1 / span 2;color:#4fc6ff;font-size:13px}
+ .home3d .steps article h3{margin:0 0 5px;font-size:18px;white-space:normal;overflow-wrap:anywhere}
+ .home3d .steps article p{margin:0;max-width:none;font-size:13px;line-height:1.7;white-space:normal;overflow-wrap:anywhere}
+ .home3d .about-grid{grid-template-columns:minmax(0,1fr)!important;gap:20px!important}
+ .home3d .about-grid>div{min-width:0}
+ .home3d .about-note{width:100%}
+}
+@media(max-width:420px){
+ .home3d .works article{height:220px;min-height:220px}
+}
