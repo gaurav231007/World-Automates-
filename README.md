@@ -39,3 +39,16 @@ Vercel should detect Vite automatically once the project is imported/redeployed.
 - No backend, CRM, authentication, analytics, payment or email delivery is connected yet.
 
 Before launch, add a real contact channel and connect the enquiry/chat flows to a secure backend. Never expose private API keys in frontend code.
+
+## Connect the AI assistant and enquiry form
+
+The repository includes server-side Vercel functions in `api/`. Configure these variables in Vercel → Project → Settings → Environment Variables, then redeploy:
+
+- `GEMINI_API_KEY` — Google AI Studio API key for the chat assistant.
+- `RESEND_API_KEY` — Resend API key for enquiry email delivery.
+- `CONTACT_EMAIL` — inbox that should receive project enquiries.
+- `RESEND_FROM` — verified sender identity/domain in Resend, for example `World Automates <hello@your-verified-domain.com>`.
+
+Keep these as server-side variables (never use a `VITE_` prefix and never commit real secrets). The chat endpoint returns a clear configuration message until its key is added. The enquiry endpoint returns a clear configuration message until all three email variables are set.
+
+The AI assistant is not a human or a sales representative; it should not make binding quotes or commitments. Add rate limiting / abuse protection before promoting the public endpoints widely.
