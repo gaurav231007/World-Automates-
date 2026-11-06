@@ -1,24 +1,41 @@
-# World Automates — Website + Agency OS
+# World Automates — Website
 
-Static, responsive frontend prototype designed for phone-first use.
+A React + Vite studio website with a live Three.js hero scene and Motion-powered interface animations.
 
-## Files
-- `index.html` — public website
-- `dashboard.html` — admin Agency OS demo
-- `style.css` — responsive styling
-- `app.js` — website navigation and email enquiry
-- `dash.js` — interactive demo lead management
+## Stack
+- React 18 + Vite
+- Motion for React (`motion/react`)
+- Three.js for the interactive 3D hero object
+- Responsive CSS with reduced-motion support
 
-## Preview
-Open `index.html` for the public website. Open `dashboard.html` for the dashboard.
+## Run locally
+```bash
+npm install
+npm run dev
+```
 
-## Free deployment
-Upload all files to the root of a GitHub repository, then import it into Vercel. No build command is needed.
+## Production build
+```bash
+npm run build
+npm run preview
+```
 
-## Before publishing
-1. Replace `REPLACE_WITH_REAL_EMAIL` in `app.js` with the real business email.
-2. Confirm the actual service list, prices, logo and contact details.
-3. Add a privacy policy and terms if collecting personal information.
+## Vercel deployment
+Import this repository into Vercel. Use:
+- Framework preset: Vite
+- Build command: `npm run build`
+- Output directory: `dist`
+- Install command: `npm install`
 
-## Important
-This is a frontend demo, not a production SaaS. Dashboard data resets on refresh. There is no authentication, database, real client portal, payment processing, invoice generation, or automation backend. Financial/project figures are illustrative placeholders. Connect Supabase Auth + database and a secure backend before storing real client data.
+Vercel should detect Vite automatically once the project is imported/redeployed.
+
+## Current functionality and limits
+- 3D hero scene is rendered in the browser with Three.js; it responds to pointer movement and respects reduced-motion preferences.
+- Motion for React powers entrance/reveal and interaction animations.
+- Mobile navigation and the guided chat preview work on the frontend.
+- The enquiry form prepares and copies a project brief locally. It does not send data to a server.
+- The chat is a scripted preview, not a connected AI agent.
+- Project visuals are concept directions, not claimed client case studies.
+- No backend, CRM, authentication, analytics, payment or email delivery is connected yet.
+
+Before launch, add a real contact channel and connect the enquiry/chat flows to a secure backend. Never expose private API keys in frontend code.
