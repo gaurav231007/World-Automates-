@@ -269,3 +269,8 @@ html,body,#root{max-width:100%;overflow-x:clip}
     padding-top: .05em;
   }
 }
+
+
+/* Visible globe fallback for browsers where WebGL cannot initialize. */
+.three-scene.scene-fallback{display:grid;place-items:center;overflow:hidden}
+.three-scene.scene-fallback:before{content:"";display:block;width:min(68%,310px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 32% 28%,#b7d5f4 0,#6598d4 22%,#24508f 62%,#10264f 100%);box-shadow:inset -22px -18px 38px #08152c99,0 0 32px #5c8fff55,0 0 85px #5c8fff25}
