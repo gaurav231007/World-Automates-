@@ -129,3 +129,49 @@ html,body,#root{max-width:100%;overflow-x:clip}
   .footer-start { grid-column:auto; }
   .footer-bottom { font-size:6px; }
 }
+
+
+/* Studio footer directory + readable project artwork */
+.footer-directory{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:34px;padding:34px 0 38px;border-top:1px solid #3c414b;border-bottom:1px solid #3c414b}
+.footer-column{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.footer-column>b{font:9px var(--mono);letter-spacing:1px;color:#9aabff;margin-bottom:7px}
+.footer-column>a,.footer-column>span{font:11px/1.5 var(--sans);color:#c1c4ca}
+.footer-column>a:hover{color:#ff9678}
+.footer-note{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 0 26px;color:#b6bac2;font:10px var(--mono)}
+.footer-note a{color:#ff9678}
+.art-index{font-size:9px!important;letter-spacing:.7px}
+.ledger-window>small{font-size:9px!important}
+.ledger-window>strong{font-size:clamp(27px,3vw,40px)!important}
+.ledger-change{font-size:10px!important}
+.ledger-change span{font-size:9px!important}
+.object-poster>small{font-size:8px!important}
+.system-track>div small{font-size:8px!important}
+.system-track>div b{font-size:clamp(14px,1.4vw,18px)!important}
+
+/* Desktop-mode browsers on phones often report a wide CSS viewport.
+   Use a wider breakpoint so editorial sections don't split awkwardly. */
+@media (max-width:1100px){
+ .statement{min-height:0}
+ .statement-content{grid-template-columns:1fr;gap:28px;align-items:start;padding:54px 0 88px}
+ .statement-copy{max-width:680px}
+ .statement-copy p{font-size:15px;line-height:1.8}
+ .statement-side{bottom:24px}
+ .work-heading,.cap-head{grid-template-columns:1fr;gap:20px;padding:44px 0}
+ .work-heading>p,.cap-head>p{max-width:680px}
+ .direction-row{grid-template-columns:38px minmax(0,1fr);gap:14px 18px}
+ .direction-row .art{grid-column:2;width:100%;height:clamp(230px,36vw,330px);margin-top:8px}
+ .direction-copy{min-width:0}
+ .contact-layout{grid-template-columns:1fr;gap:32px}
+ .contact-intro{max-width:620px}
+ .brief-form{width:100%;max-width:760px}
+ .footer-directory{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:600px){
+ .footer-directory{grid-template-columns:1fr 1fr;gap:28px 18px}
+ .footer-column:last-child{grid-column:1/-1}
+ .footer-note{align-items:flex-start;flex-direction:column;gap:8px;line-height:1.6}
+}
+@media (max-width:380px){
+ .footer-directory{grid-template-columns:1fr}
+ .footer-column:last-child{grid-column:auto}
+}
