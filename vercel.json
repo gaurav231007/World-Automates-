@@ -3,6 +3,10 @@
     {
       "source": "/admin/:path*",
       "destination": "/"
+    },
+    {
+      "source": "/staff/:path*",
+      "destination": "/"
     }
   ]
 }
