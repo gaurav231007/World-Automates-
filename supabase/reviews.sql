@@ -26,3 +26,11 @@ create table if not exists public.leads (
 );
 alter table public.leads enable row level security;
 -- Access is server-side only through the Supabase service-role key in Vercel.
+
+-- Editable website content managed from the private admin panel.
+create table if not exists public.site_settings (
+ key text primary key,
+ value text not null,
+ updated_at timestamptz not null default now()
+);
+alter table public.site_settings enable row level security;
