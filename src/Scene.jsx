@@ -24,12 +24,12 @@ export default function Scene(){
    const earthGroup=new THREE.Group();scene.add(earthGroup);
    const loader=new THREE.TextureLoader();
    loader.setCrossOrigin('anonymous');
-   const load=(url)=>{const t=loader.load(url,()=>{if(!disposed){t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=renderer.capabilities.getMaxAnisotropy();}});textures.push(t);return t;};
+   const load=(url)=>{const t=loader.load(url,()=>{if(!disposed){t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=renderer.capabilities.getMaxAnisotropy();}},undefined,()=>{if(!disposed)console.warn('Earth texture unavailable:',url);});textures.push(t);return t;};
    const earthMap=load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
    const earthBump=load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
    const earthSpec=load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
    const earthGeo=new THREE.SphereGeometry(1.72,96,96);geometries.push(earthGeo);
-   const earthMat=new THREE.MeshPhongMaterial({map:earthMap,bumpMap:earthBump,bumpScale:.045,specularMap:earthSpec,specular:new THREE.Color(0x334466),shininess:18});
+   const earthMat=new THREE.MeshPhongMaterial({color:0x6f9bdc,map:earthMap,bumpMap:earthBump,bumpScale:.045,specularMap:earthSpec,specular:new THREE.Color(0x334466),shininess:18});
    materials.push(earthMat);
    const earth=new THREE.Mesh(earthGeo,earthMat);earthGroup.add(earth);
    const cloudMap=load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
@@ -56,7 +56,7 @@ export default function Scene(){
    const draw=()=>{if(disposed)return;const t=performance.now()*.001;pointer.x+=(target.x-pointer.x)*.035;pointer.y+=(target.y-pointer.y)*.035;earthGroup.rotation.y=pointer.x+(reduced?0:t*.075);earthGroup.rotation.x=pointer.y+Math.sin(t*.22)*.035;clouds.rotation.y=earthGroup.rotation.y+t*.012;orbit1.rotation.z=reduced?orbit1.rotation.z:Math.sin(t*.13)*.08;orbit2.rotation.x=reduced?orbit2.rotation.x:Math.cos(t*.11)*.06;renderer.render(scene,camera);if(!reduced)raf=requestAnimationFrame(draw);};
    draw();
    return()=>{disposed=true;cancelAnimationFrame(raf);observer?.disconnect();el.removeEventListener('pointermove',move);el.removeEventListener('pointerleave',leave);geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());renderer?.dispose();renderer?.domElement.remove();};
-  }catch(e){el.classList.add('scene-fallback');el.textContent='WORLD / AUTOMATES';}
+  }catch(e){console.error('Earth scene could not start:',e);el.classList.add('scene-fallback');el.textContent='';}
  },[]);
  return <div className="three-scene" ref={host} role="img" aria-label="Realistic rotating Earth with moving clouds and blue atmospheric glow"/>;
 }
