@@ -243,3 +243,29 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .admin-review-actions strong{font:9px var(--mono);color:#3457d5;text-align:center}
 .admin-review-actions button:first-of-type{background:#3457d5;color:white;border-color:#3457d5}
 @media(max-width:650px){.reviews-heading{grid-template-columns:1fr;gap:15px;padding:40px 0 28px}.reviews-grid{grid-template-columns:1fr}.review-card{min-height:0}.review-fields{grid-template-columns:1fr}.review-fields .review-wide{grid-column:auto}.review-form{padding:18px}.review-form-title{font-size:8px}.admin-page{padding:0 5% 50px}.admin-login{margin-top:9vh;padding:24px}.admin-title{align-items:start;flex-direction:column}.admin-review{grid-template-columns:1fr}.admin-review-actions{flex-direction:row;flex-wrap:wrap;align-items:center}.admin-stats{gap:12px;flex-wrap:wrap;font-size:8px}}
+
+
+/* Mobile heading typography: keep descenders and italic i-dots from colliding. */
+.work-heading h2 {
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+  overflow: visible;
+}
+.work-heading h2 em {
+  display: inline-block;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  padding-top: .035em;
+}
+@media (max-width: 650px) {
+  .work-heading h2 {
+    font-size: clamp(44px, 11.5vw, 60px);
+    line-height: 1.14;
+    letter-spacing: -0.04em;
+  }
+  .work-heading h2 em {
+    line-height: 1.16;
+    letter-spacing: -0.03em;
+    padding-top: .05em;
+  }
+}
