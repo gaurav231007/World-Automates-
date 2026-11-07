@@ -325,3 +325,5 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .admin-empty{padding:35px 20px;background:#e8e6de;color:#69707a;font-size:13px}
 .admin-notice{display:block;margin-top:18px;color:#8a543f}
 @media(max-width:650px){.admin-top-actions{width:100%}.admin-module-head{align-items:start;flex-direction:column}.admin-module-head>span{text-align:left}.admin-tabs button{padding:13px 10px;font-size:8px}}
+
+.content-editor{max-width:850px}.content-field{display:flex;flex-direction:column;gap:8px;margin:16px 0;font:9px var(--mono);letter-spacing:.6px;color:#68707c}.content-field textarea{width:100%;resize:vertical;min-height:58px;padding:13px;background:#f8f7f2;border:1px solid #d5d2c9;color:#171a20;font:13px/1.6 var(--sans)}.content-save{width:100%;margin-top:16px;padding:15px;background:#3457d5;color:#fff;border:0;font:10px var(--mono);cursor:pointer}
