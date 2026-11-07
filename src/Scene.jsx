@@ -50,7 +50,7 @@ export default function Scene(){
    const move=e=>{const r=el.getBoundingClientRect();target.x=((e.clientX-r.left)/r.width-.5)*.34;target.y=((e.clientY-r.top)/r.height-.5)*.24;};
    const leave=()=>{target.x=target.y=0;};
    el.addEventListener('pointermove',move);el.addEventListener('pointerleave',leave);
-   const resize=()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.position.z=w<650?6.6:6.25;earthGroup.scale.setScalar(w<650?.96:1.08);camera.updateProjectionMatrix();renderer.setSize(w,h);};
+   const resize=()=>{const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.position.z=w<650?6.6:6.25;earthGroup.scale.setScalar(w<650?.82:.94);camera.updateProjectionMatrix();renderer.setSize(w,h);};
    observer=new ResizeObserver(resize);observer.observe(el);resize();
    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
    const draw=()=>{if(disposed)return;const t=performance.now()*.001;pointer.x+=(target.x-pointer.x)*.035;pointer.y+=(target.y-pointer.y)*.035;earthGroup.rotation.y=pointer.x+(reduced?0:t*.075);earthGroup.rotation.x=pointer.y+Math.sin(t*.22)*.035;clouds.rotation.y=earthGroup.rotation.y+t*.012;orbit1.rotation.z=reduced?orbit1.rotation.z:Math.sin(t*.13)*.08;orbit2.rotation.x=reduced?orbit2.rotation.x:Math.cos(t*.11)*.06;renderer.render(scene,camera);if(!reduced)raf=requestAnimationFrame(draw);};
