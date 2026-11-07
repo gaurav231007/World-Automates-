@@ -182,3 +182,15 @@ html,body,#root{max-width:100%;overflow-x:clip}
 @media(max-width:900px){.hero-object{height:clamp(430px,65vw,560px)}}
 @media(max-width:650px){.hero-object{height:clamp(350px,95vw,430px);min-height:350px}}
 @media(max-width:380px){.hero-object{height:340px;min-height:340px}}
+
+
+/* Compact Earth hero with service labels orbiting the globe */
+.hero-object{height:520px}
+.earth-tag{position:absolute;z-index:3;display:flex;align-items:center;gap:8px;padding:9px 11px;background:rgba(248,246,240,.92);border:1px solid rgba(190,190,184,.8);box-shadow:0 8px 24px rgba(32,36,49,.07);backdrop-filter:blur(7px);font:8px var(--mono);letter-spacing:.45px;color:#343945;white-space:nowrap;pointer-events:none}
+.earth-tag i{width:6px;height:6px;display:block;border-radius:50%;background:var(--orange);box-shadow:0 0 0 3px rgba(255,112,77,.13)}
+.earth-tag b{font-size:7px;color:var(--blue);font-weight:500;margin-left:4px}
+.earth-tag-one{left:7%;top:29%;transform:rotate(-4deg)}
+.earth-tag-two{right:7%;top:45%;transform:rotate(3deg)}
+.earth-tag-three{left:16%;bottom:18%;transform:rotate(2deg)}
+@media(max-width:900px){.hero-object{height:clamp(280px,54vw,420px)}.earth-tag{padding:7px 8px;font-size:7px;gap:6px}.earth-tag-one{left:4%;top:27%}.earth-tag-two{right:3%;top:47%}.earth-tag-three{left:9%;bottom:15%}}
+@media(max-width:420px){.earth-tag{font-size:6px;padding:6px 7px}.earth-tag-three{left:5%;bottom:13%}.object-caption{padding:9px 11px;font-size:8px}}
