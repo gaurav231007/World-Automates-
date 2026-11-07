@@ -1,0 +1,59 @@
+import crypto from 'node:crypto';
+
+const cookieName = 'wa_admin';
+const b64 = value => Buffer.from(value).toString('base64url');
+const safeEqual = (a,b) => { const x=Buffer.from(String(a)); const y=Buffer.from(String(b)); return x.length===y.length && crypto.timingSafeEqual(x,y); };
+function sign(value){return crypto.createHmac('sha256',process.env.ADMIN_SESSION_SECRET).update(value).digest('base64url');}
+function setCookie(res,value,maxAge=60*60*8){res.setHeader('Set-Cookie',`${cookieName}=${value}; HttpOnly; Secure; SameSite=Strict; Path=/api/reviews; Max-Age=${maxAge}`);}
+function clearCookie(res){setCookie(res,'',0);}
+function session(req){
+ const raw=(req.headers.cookie||'').split(';').map(v=>v.trim()).find(v=>v.startsWith(cookieName+'='))?.slice(cookieName.length+1);
+ if(!raw||!process.env.ADMIN_SESSION_SECRET)return false;
+ const [payload,signature]=raw.split('.');
+ if(!payload||!signature||!safeEqual(signature,sign(payload)))return false;
+ try{const data=JSON.parse(Buffer.from(payload,'base64url').toString());return data.exp>Date.now();}catch{return false;}
+}
+async function db(path,options={}){
+ const url=process.env.SUPABASE_URL, key=process.env.SUPABASE_SERVICE_ROLE_KEY;
+ if(!url||!key)throw new Error('Review storage is not configured. Add Supabase environment variables.');
+ const response=await fetch(url.replace(/\/$/,'')+'/rest/v1/'+path,{...options,headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json',...(options.headers||{})}});
+ const body=await response.text();
+ if(!response.ok)throw new Error('Review database request failed ('+response.status+').');
+ return body?JSON.parse(body):null;
+}
+export default async function handler(req,res){
+ res.setHeader('Cache-Control','no-store');
+ try{
+  if(req.method==='GET'){
+   const rows=await db('reviews?select=id,name,rating,title,body,created_at&status=eq.approved&order=created_at.desc&limit=50');
+   return res.status(200).json({reviews:rows});
+  }
+  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
+  const body=req.body||{};
+  if(body.action==='login'){
+   if(!process.env.ADMIN_PASSWORD||!process.env.ADMIN_SESSION_SECRET)return res.status(503).json({error:'Admin login is not configured yet.'});
+   if(typeof body.password!=='string'||!safeEqual(body.password,process.env.ADMIN_PASSWORD))return res.status(401).json({error:'Incorrect password.'});
+   const payload=b64(JSON.stringify({role:'admin',exp:Date.now()+8*60*60*1000}));
+   setCookie(res,payload+'.'+sign(payload));
+   return res.status(200).json({ok:true});
+  }
+  if(body.action==='logout'){clearCookie(res);return res.status(200).json({ok:true});}
+  if(body.action==='admin-list'||body.action==='moderate'){
+   if(!session(req))return res.status(401).json({error:'Please sign in again.'});
+   if(body.action==='admin-list'){
+    const rows=await db('reviews?select=id,name,email,rating,title,body,status,created_at&order=created_at.desc&limit=100');
+    return res.status(200).json({reviews:rows});
+   }
+   if(typeof body.id!=='string'||!/^\d+$/.test(body.id)||!['approved','rejected','pending'].includes(body.status))return res.status(400).json({error:'Invalid review update.'});
+   const rows=await db('reviews?id=eq.'+body.id,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:body.status})});
+   return res.status(200).json({review:rows?.[0]||null});
+  }
+  const {name,email,rating,title,review}=body;
+  if(typeof name!=='string'||name.trim().length<2||name.length>80)return res.status(400).json({error:'Enter your name (2–80 characters).'});
+  if(typeof email!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>160)return res.status(400).json({error:'Enter a valid email address.'});
+  if(!Number.isInteger(rating)||rating<1||rating>5)return res.status(400).json({error:'Choose a rating from 1 to 5.'});
+  if(typeof title!=='string'||title.trim().length<3||title.length>100||typeof review!=='string'||review.trim().length<15||review.length>1500)return res.status(400).json({error:'Add a short title and at least 15 characters of feedback.'});
+  const rows=await db('reviews',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({name:name.trim(),email:email.trim(),rating,title:title.trim(),body:review.trim(),status:'pending'})});
+  return res.status(201).json({ok:true,message:'Thanks! Your review has been submitted for approval.'});
+ }catch(error){return res.status(503).json({error:error.message||'Service temporarily unavailable.'});}
+}
