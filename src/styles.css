@@ -175,3 +175,10 @@ html,body,#root{max-width:100%;overflow-x:clip}
  .footer-directory{grid-template-columns:1fr}
  .footer-column:last-child{grid-column:auto}
 }
+
+
+/* Real Earth hero: give the globe room to read clearly on every screen. */
+.hero-object{height:650px}
+@media(max-width:900px){.hero-object{height:clamp(430px,65vw,560px)}}
+@media(max-width:650px){.hero-object{height:clamp(350px,95vw,430px);min-height:350px}}
+@media(max-width:380px){.hero-object{height:340px;min-height:340px}}
