@@ -34,3 +34,16 @@ create table if not exists public.site_settings (
  updated_at timestamptz not null default now()
 );
 alter table public.site_settings enable row level security;
+
+
+-- Team accounts and roles. Auth identities are managed through Supabase Auth.
+create table if not exists public.team_members (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  full_name text not null,
+  email text not null unique,
+  role text not null check (role in ('manager','sales','developer','viewer')),
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+alter table public.team_members enable row level security;
+-- No direct client policies. Team administration is performed by trusted server routes only.
