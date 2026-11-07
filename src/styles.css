@@ -310,3 +310,18 @@ html,body,#root{max-width:100%;overflow-x:clip}
   .three-scene canvas {position:absolute;inset:0;z-index:1}
   .hero-object {background:#e6e4dc}
 }
+
+
+/* Studio OS dashboard */
+.admin-top-actions{display:flex;gap:9px;flex-wrap:wrap}
+.admin-top-actions button{border:1px solid #c8c5bb;background:transparent;padding:11px 14px;font:9px var(--mono);cursor:pointer}
+.admin-tabs{display:flex;gap:8px;border-bottom:1px solid #d5d2c9;margin:24px 0}
+.admin-tabs button{border:0;background:transparent;padding:15px 18px;font:9px var(--mono);letter-spacing:.5px;color:#737982;cursor:pointer;border-bottom:2px solid transparent}
+.admin-tabs button.active{color:#3457d5;border-bottom-color:#3457d5}
+.admin-module-head{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:18px 0 20px}
+.admin-module-head h2{font:800 clamp(28px,4vw,46px)/1 var(--display);letter-spacing:-.06em;margin:0}
+.admin-module-head>span{font:8px var(--mono);color:#737982;text-align:right;max-width:230px;line-height:1.6}
+.admin-lead a{color:#3457d5}
+.admin-empty{padding:35px 20px;background:#e8e6de;color:#69707a;font-size:13px}
+.admin-notice{display:block;margin-top:18px;color:#8a543f}
+@media(max-width:650px){.admin-top-actions{width:100%}.admin-module-head{align-items:start;flex-direction:column}.admin-module-head>span{text-align:left}.admin-tabs button{padding:13px 10px;font-size:8px}}
