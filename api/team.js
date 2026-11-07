@@ -87,7 +87,7 @@ export default async function handler(req,res){
    return res.status(200).json({projects:rows||[]});
   }
   if(body.action==='project-create'){
-   if(!['owner','manager'].includes('owner')||typeof body.name!=='string'||body.name.trim().length<2)return res.status(400).json({error:'Enter a project name.'});
+   if(typeof body.name!=='string'||body.name.trim().length<2)return res.status(400).json({error:'Enter a project name.'});
    const rows=await auth('/rest/v1/projects',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({name:body.name.trim(),client_name:String(body.client_name||'').slice(0,160),description:String(body.description||'').slice(0,3000),due_date:body.due_date||null})});
    return res.status(201).json({project:rows?.[0]||null});
   }
