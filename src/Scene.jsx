@@ -59,6 +59,7 @@ export default function Scene(){
     renderer.render(scene,camera);
     if(!reduced)raf=requestAnimationFrame(draw);
    };
+   resize();
    draw(performance.now());
    return cleanup;
   }catch(e){
