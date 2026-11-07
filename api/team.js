@@ -62,6 +62,13 @@ export default async function handler(req,res){
   }
   if(body.action==='logout'){setStaffCookie(res,'',0);return res.status(200).json({ok:true});}
   if(body.action==='me'){const m=await currentStaff(req);return m?res.status(200).json({member:m}):res.status(401).json({error:'Please sign in again.'});}
+  if(body.action==='tasks-list'){
+   const staff=ownerSession(req)?null:await currentStaff(req);
+   if(!staff&&!ownerSession(req))return res.status(401).json({error:'Please sign in again.'});
+   const filter=staff?'&assigned_to=eq.'+encodeURIComponent(staff.user_id):'';
+   const rows=await auth('/rest/v1/tasks?select=*,projects(name)&order=created_at.desc'+filter);
+   return res.status(200).json({tasks:rows||[]});
+  }
   if(!ownerSession(req))return res.status(401).json({error:'Owner access required.'});
   if(body.action==='list'){
    const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at&order=created_at.desc');
@@ -90,13 +97,6 @@ export default async function handler(req,res){
    if(typeof body.name!=='string'||body.name.trim().length<2)return res.status(400).json({error:'Enter a project name.'});
    const rows=await auth('/rest/v1/projects',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({name:body.name.trim(),client_name:String(body.client_name||'').slice(0,160),description:String(body.description||'').slice(0,3000),due_date:body.due_date||null})});
    return res.status(201).json({project:rows?.[0]||null});
-  }
-  if(body.action==='tasks-list'){
-   const staff=ownerSession(req)?null:await currentStaff(req);
-   if(!staff&&!ownerSession(req))return res.status(401).json({error:'Please sign in again.'});
-   const filter=staff?'&assigned_to=eq.'+encodeURIComponent(staff.user_id):'';
-   const rows=await auth('/rest/v1/tasks?select=*,projects(name)&order=created_at.desc'+filter);
-   return res.status(200).json({tasks:rows||[]});
   }
   if(body.action==='task-create'){
    if(!ownerSession(req))return res.status(401).json({error:'Owner access required.'});
