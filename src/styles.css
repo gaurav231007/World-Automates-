@@ -327,3 +327,7 @@ html,body,#root{max-width:100%;overflow-x:clip}
 @media(max-width:650px){.admin-top-actions{width:100%}.admin-module-head{align-items:start;flex-direction:column}.admin-module-head>span{text-align:left}.admin-tabs button{padding:13px 10px;font-size:8px}}
 
 .content-editor{max-width:850px}.content-field{display:flex;flex-direction:column;gap:8px;margin:16px 0;font:9px var(--mono);letter-spacing:.6px;color:#68707c}.content-field textarea{width:100%;resize:vertical;min-height:58px;padding:13px;background:#f8f7f2;border:1px solid #d5d2c9;color:#171a20;font:13px/1.6 var(--sans)}.content-save{width:100%;margin-top:16px;padding:15px;background:#3457d5;color:#fff;border:0;font:10px var(--mono);cursor:pointer}
+/* Team management and staff portal */
+.content-field input,.content-field select{width:100%;padding:13px;background:#f8f7f2;border:1px solid #d5d2c9;color:#171a20;font:13px var(--sans);min-height:44px}
+.admin-tabs{flex-wrap:wrap}
+@media(max-width:650px){.admin-tabs{gap:2px}.admin-tabs button{padding:12px 8px;font-size:7px}.content-field input,.content-field select{font-size:16px}.admin-page{padding-bottom:36px}}
