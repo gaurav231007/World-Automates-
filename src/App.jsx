@@ -47,7 +47,7 @@ function AdminPanel(){
 
 export default function App(){
  const [menu,setMenu]=useState(false),[form,setForm]=useState({name:'',email:'',service:'Website / digital experience',details:''}),[notice,setNotice]=useState('');
- if(window.location.pathname.replace(/\\/+$/, '')==='/admin') return <AdminPanel/>;
+ if(window.location.pathname.replace(/\/+$/, '')==='/admin') return <AdminPanel/>;
  const update=e=>setForm({...form,[e.target.name]:e.target.value});
  const submit=async e=>{e.preventDefault();setNotice('Sending…');try{const r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not send. Please try again.');setNotice(d.message);setForm({name:'',email:'',service:'Website / digital experience',details:''});}catch(e){setNotice(e.message)}};
  return <div className="site-shell">
