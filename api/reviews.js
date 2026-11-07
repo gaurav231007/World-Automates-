@@ -38,8 +38,21 @@ export default async function handler(req,res){
    return res.status(200).json({ok:true});
   }
   if(body.action==='logout'){clearCookie(res);return res.status(200).json({ok:true});}
-  if(body.action==='admin-list'||body.action==='moderate'||body.action==='leads-list'||body.action==='lead-update'){
+  if(body.action==='admin-list'||body.action==='moderate'||body.action==='leads-list'||body.action==='lead-update'||body.action==='content-get'||body.action==='content-save'){
    if(!session(req))return res.status(401).json({error:'Please sign in again.'});
+   if(body.action==='content-get'){
+    const rows=await db('site_settings?select=key,value');
+    const settings={};for(const row of rows||[])settings[row.key]=row.value;
+    return res.status(200).json({settings});
+   }
+   if(body.action==='content-save'){
+    if(!body.settings||typeof body.settings!=='object'||Array.isArray(body.settings))return res.status(400).json({error:'Invalid content settings.'});
+    const allowed=['announcement','heroEyebrow','heroTitle','heroSummary','statementTitle','statementCopy1','statementCopy2','contactTitle','contactIntro','footerTagline','services'];
+    const rows=allowed.filter(k=>body.settings[k]!==undefined).map(key=>({key,value:body.settings[key]}));
+    if(rows.some(r=>typeof r.value!=='string'||r.value.length>3000))return res.status(400).json({error:'Content values must be text under 3000 characters.'});
+    for(const row of rows)await db('site_settings?on_conflict=key',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
+    return res.status(200).json({ok:true,message:'Website content saved.'});
+   }
    if(body.action==='leads-list'){\n    const rows=await db('leads?select=id,name,email,service,details,status,created_at&order=created_at.desc&limit=100');\n    return res.status(200).json({leads:rows});\n   }\n   if(body.action==='lead-update'){\n    if(typeof body.id!=='string'||!/^[0-9]+$/.test(body.id)||!['new','contacted','qualified','closed'].includes(body.status))return res.status(400).json({error:'Invalid lead update.'});\n    const rows=await db('leads?id=eq.'+body.id,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:body.status})});\n    return res.status(200).json({lead:rows?.[0]||null});\n   }\n   if(body.action==='admin-list'){
     const rows=await db('reviews?select=id,name,email,rating,title,body,status,created_at&order=created_at.desc&limit=100');
     return res.status(200).json({reviews:rows});
