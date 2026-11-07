@@ -52,3 +52,24 @@ The repository includes server-side Vercel functions in `api/`. Configure these 
 Keep these as server-side variables (never use a `VITE_` prefix and never commit real secrets). The chat endpoint returns a clear configuration message until its key is added. The enquiry endpoint returns a clear configuration message until all three email variables are set.
 
 The AI assistant is not a human or a sales representative; it should not make binding quotes or commitments. Add rate limiting / abuse protection before promoting the public endpoints widely.
+
+
+## Reviews and admin moderation
+
+- Public review form: visitors can submit a star rating and written feedback.
+- Reviews are stored as `pending` and are not shown publicly until approved.
+- Private admin dashboard: open `/admin`, sign in, then approve or reject submissions.
+- Review API uses Supabase server-side with the service-role key. Do not expose that key in browser code.
+
+### One-time Supabase setup
+
+1. Create a Supabase project.
+2. Open SQL Editor and run `supabase/reviews.sql`.
+3. In Vercel → Project → Settings → Environment Variables, add:
+   - `SUPABASE_URL`: project URL
+   - `SUPABASE_SERVICE_ROLE_KEY`: service-role key (server-side only)
+   - `ADMIN_PASSWORD`: a long, unique admin password
+   - `ADMIN_SESSION_SECRET`: a separate random secret (at least 32 random bytes)
+4. Redeploy the Vercel production deployment.
+
+Until those four environment variables and the SQL schema are configured, review submissions and admin login return a configuration error. Keep the Supabase service-role key and admin secrets private; never paste them into chat or commit them to Git.
