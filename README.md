@@ -27,7 +27,7 @@ Import this repository into Vercel. Use:
 - Output directory: `dist`
 - Install command: `npm install`
 
-Vercel should detect Vite automatically once the project is imported/redeployed.
+Vercel should detect Vite automatically. Production deployments are created from new commits pushed to the connected production branch (`main`).
 
 ## Current functionality and limits
 - 3D hero scene is rendered in the browser with Three.js; it responds to pointer movement and respects reduced-motion preferences.
