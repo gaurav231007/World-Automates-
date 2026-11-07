@@ -277,3 +277,36 @@ html,body,#root{max-width:100%;overflow-x:clip}
 
 .three-scene.scene-fallback canvas{display:none!important}
 .three-scene.scene-fallback:before{content:"";display:block;width:min(68%,310px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 32% 28%,#b7d5f4 0,#6598d4 22%,#24508f 62%,#10264f 100%);box-shadow:inset -22px -18px 38px #08152c99,0 0 32px #5c8fff55,0 0 85px #5c8fff25}
+
+
+/* Phone browsers using desktop-site mode report a wide viewport.
+   Keep the hero and navigation in the mobile composition up to 1100px. */
+@media (max-width: 1100px) {
+  .main-nav {height:68px}
+  .menu-trigger {display:block;border:0;background:none;font:10px var(--mono)}
+  .navigation {display:none;position:absolute;top:67px;left:0;right:0;padding:22px 6%;background:var(--paper);border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;gap:18px}
+  .navigation.is-open {display:flex}
+  .nav-contact {text-align:center}
+  .hero-layout {display:flex;flex-direction:column;align-items:stretch;min-height:0}
+  .hero-message {width:100%;padding:48px 0 20px}
+  .hero-message h1 {white-space:normal;font-size:clamp(64px,10vw,100px);line-height:.98;max-width:100%}
+  .hero-summary {max-width:680px;font-size:clamp(15px,2vw,19px)}
+  .hero-object {width:100%;height:clamp(300px,55vw,440px);margin:18px 0 24px}
+  .hero-proof {margin-top:32px;flex-wrap:wrap}
+  .section-pad {padding:76px 6%}
+}
+@media (max-width: 1100px) {
+  .three-scene {display:grid;place-items:center}
+  .three-scene:before {
+    content:"";display:block;width:min(68%,310px);aspect-ratio:1;border-radius:50%;
+    background:
+      radial-gradient(ellipse at 35% 38%,#77a96c 0 8%,transparent 9%),
+      radial-gradient(ellipse at 58% 60%,#83b879 0 11%,transparent 12%),
+      radial-gradient(ellipse at 63% 31%,#7cae75 0 7%,transparent 8%),
+      radial-gradient(circle at 32% 27%,#a9d0f0 0,#6799d0 28%,#28538d 68%,#101f43 100%);
+    box-shadow:inset -22px -18px 38px #08152c99,0 0 32px #5c8fff55,0 0 85px #5c8fff25;
+    position:absolute;z-index:0;pointer-events:none
+  }
+  .three-scene canvas {position:absolute;inset:0;z-index:1}
+  .hero-object {background:#e6e4dc}
+}
