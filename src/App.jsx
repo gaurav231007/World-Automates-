@@ -15,7 +15,9 @@ const directions = [
 ];
 function Reveal({children,className='',delay=0}) {
  const reduce=useReducedMotion();
- return <motion.div className={className} initial={reduce?false:{opacity:0,y:22}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.16}} transition={{duration:reduce?0:.6,delay,ease:[.2,.7,.2,1]}}>{children}</motion.div>;
+ const compact=typeof window!=='undefined'&&window.matchMedia('(max-width: 900px)').matches;
+ if(compact||reduce)return <div className={className}>{children}</div>;
+ return <motion.div className={className} initial={{opacity:0,y:22}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.16}} transition={{duration:.6,delay,ease:[.2,.7,.2,1]}}>{children}</motion.div>;
 }
 function Artwork({kind}) {
  if(kind==='ledger') return <div className="art art-ledger"><div className="art-index">FIELD NOTE / 001</div><div className="ledger-window"><div className="ledger-head"><b>north / account</b><span>•••</span></div><small>AVAILABLE BALANCE</small><strong>₹ 8,42,600</strong><div className="ledger-change">↗ 12.8% <span>compared to last month</span></div><div className="ledger-graph">{[34,55,42,73,60,88,52,94,67,100,77,91].map((v,i)=><i key={i} style={{height:v+'%'}}/>)}</div></div><span className="art-stamp">MAKE<br/>SENSE<br/><i>OF IT.</i></span></div>;
