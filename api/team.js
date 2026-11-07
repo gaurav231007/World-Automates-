@@ -82,6 +82,39 @@ export default async function handler(req,res){
    else await auth('/auth/v1/admin/users/'+body.user_id,{method:'PUT',body:JSON.stringify({ban_duration:'none'})});
    return res.status(200).json({ok:true,member:rows?.[0]||null});
   }
+  if(body.action==='projects-list'){
+   const rows=await auth('/rest/v1/projects?select=*&order=created_at.desc');
+   return res.status(200).json({projects:rows||[]});
+  }
+  if(body.action==='project-create'){
+   if(!['owner','manager'].includes('owner')||typeof body.name!=='string'||body.name.trim().length<2)return res.status(400).json({error:'Enter a project name.'});
+   const rows=await auth('/rest/v1/projects',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({name:body.name.trim(),client_name:String(body.client_name||'').slice(0,160),description:String(body.description||'').slice(0,3000),due_date:body.due_date||null})});
+   return res.status(201).json({project:rows?.[0]||null});
+  }
+  if(body.action==='tasks-list'){
+   const staff=ownerSession(req)?null:await currentStaff(req);
+   if(!staff&&!ownerSession(req))return res.status(401).json({error:'Please sign in again.'});
+   const filter=staff?'&assigned_to=eq.'+encodeURIComponent(staff.user_id):'';
+   const rows=await auth('/rest/v1/tasks?select=*,projects(name)&order=created_at.desc'+filter);
+   return res.status(200).json({tasks:rows||[]});
+  }
+  if(body.action==='task-create'){
+   if(!ownerSession(req))return res.status(401).json({error:'Owner access required.'});
+   if(typeof body.title!=='string'||body.title.trim().length<2||typeof body.assigned_to!=='string'||!['todo','in_progress','blocked','done'].includes(body.status||'todo')||!['low','normal','high','urgent'].includes(body.priority||'normal'))return res.status(400).json({error:'Check task title, assignee, status and priority.'});
+   const assignee=await member(body.assigned_to);if(!assignee?.active)return res.status(400).json({error:'Choose an active employee.'});
+   const rows=await auth('/rest/v1/tasks',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({project_id:body.project_id||null,title:body.title.trim(),description:String(body.description||'').slice(0,3000),assigned_to:body.assigned_to,status:body.status||'todo',priority:body.priority||'normal',due_date:body.due_date||null})});
+   return res.status(201).json({task:rows?.[0]||null});
+  }
+  if(body.action==='task-update'){
+   const staff=ownerSession(req)?null:await currentStaff(req);
+   if(!staff&&!ownerSession(req))return res.status(401).json({error:'Please sign in again.'});
+   if(!/^\\d+$/.test(String(body.id))||!['todo','in_progress','blocked','done'].includes(body.status))return res.status(400).json({error:'Invalid task update.'});
+   const rows=await auth('/rest/v1/tasks?select=id,assigned_to&id=eq.'+encodeURIComponent(body.id));
+   if(!rows?.length)return res.status(404).json({error:'Task not found.'});
+   if(staff&&rows[0].assigned_to!==staff.user_id)return res.status(403).json({error:'This task is not assigned to you.'});
+   const updated=await auth('/rest/v1/tasks?id=eq.'+encodeURIComponent(body.id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:body.status,updated_at:new Date().toISOString()})});
+   return res.status(200).json({task:updated?.[0]||null});
+  }
   return res.status(400).json({error:'Unknown action.'});
  }catch(e){return res.status(503).json({error:e.message||'Team service unavailable.'});}
 }
