@@ -47,7 +47,7 @@ The repository includes server-side Vercel functions in `api/`. Configure these 
 - `GEMINI_API_KEY` — Google AI Studio API key for the chat assistant.
 - `RESEND_API_KEY` — Resend API key for enquiry email delivery.
 - `CONTACT_EMAIL` — inbox that should receive project enquiries.
-- `RESEND_FROM` — verified sender identity/domain in Resend, for example `World Automates <hello@your-verified-domain.com>`.
+- `RESEND_FROM` — verified sender identity/domain in Resend, for example `World Automates <hello@your-verified-domain.com>`.\n- `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` — server-side lead inbox and review storage.\n- `GEMINI_API_KEY` — powers the website chat assistant.\n\nThe contact form now saves each enquiry in the `leads` table and sends an immediate acknowledgement email through Resend when configured. The private `/admin` Studio OS includes an Enquiries inbox (new/contacted/qualified/closed) and review moderation. Run the updated `supabase/reviews.sql` to create both tables.
 
 Keep these as server-side variables (never use a `VITE_` prefix and never commit real secrets). The chat endpoint returns a clear configuration message until its key is added. The enquiry endpoint returns a clear configuration message until all three email variables are set.
 
