@@ -53,7 +53,16 @@ export default async function handler(req,res){
     for(const row of rows)await db('site_settings?on_conflict=key',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
     return res.status(200).json({ok:true,message:'Website content saved.'});
    }
-   if(body.action==='leads-list'){\n    const rows=await db('leads?select=id,name,email,service,details,status,created_at&order=created_at.desc&limit=100');\n    return res.status(200).json({leads:rows});\n   }\n   if(body.action==='lead-update'){\n    if(typeof body.id!=='string'||!/^[0-9]+$/.test(body.id)||!['new','contacted','qualified','closed'].includes(body.status))return res.status(400).json({error:'Invalid lead update.'});\n    const rows=await db('leads?id=eq.'+body.id,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:body.status})});\n    return res.status(200).json({lead:rows?.[0]||null});\n   }\n   if(body.action==='admin-list'){
+   if(body.action==='leads-list'){
+    const rows=await db('leads?select=id,name,email,service,details,status,created_at&order=created_at.desc&limit=100');
+    return res.status(200).json({leads:rows});
+   }
+   if(body.action==='lead-update'){
+    if(typeof body.id!=='string'||!/^[0-9]+$/.test(body.id)||!['new','contacted','qualified','closed'].includes(body.status))return res.status(400).json({error:'Invalid lead update.'});
+    const rows=await db('leads?id=eq.'+body.id,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:body.status})});
+    return res.status(200).json({lead:rows?.[0]||null});
+   }
+   if(body.action==='admin-list'){
     const rows=await db('reviews?select=id,name,email,rating,title,body,status,created_at&order=created_at.desc&limit=100');
     return res.status(200).json({reviews:rows});
    }
