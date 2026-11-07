@@ -37,6 +37,21 @@ export default async function handler(req,res){
  try{
   const body=req.body||{},base=process.env.SUPABASE_URL?.replace(/\/$/,'');
   if(!base||!process.env.SUPABASE_SERVICE_ROLE_KEY)return res.status(503).json({error:'Supabase is not configured.'});
+  if(body.action==='password-reset-request'){
+   if(typeof body.email!=='string'||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(body.email))return res.status(400).json({error:'Enter your registered email.'});
+   const redirect=encodeURIComponent((process.env.PUBLIC_SITE_URL||'https://world-automates-ocp4.vercel.app')+'/staff');
+   const r=await fetch(base+'/auth/v1/recover?redirect_to='+redirect,{method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:body.email.trim()})});
+   if(!r.ok)return res.status(400).json({error:'Could not send reset email. Check Supabase email settings.'});
+   return res.status(200).json({ok:true,message:'If this email belongs to an account, a password reset link has been sent.'});
+  }
+  if(body.action==='password-reset-complete'){
+   if(typeof body.access_token!=='string'||typeof body.password!=='string'||body.password.length<10||body.password.length>128)return res.status(400).json({error:'Use a valid reset link and a password of at least 10 characters.'});
+   const check=await fetch(base+'/auth/v1/user',{headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+body.access_token}});
+   if(!check.ok)return res.status(401).json({error:'Reset link is invalid or expired. Request a new one.'});
+   const changed=await fetch(base+'/auth/v1/user',{method:'PUT',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+body.access_token,'Content-Type':'application/json'},body:JSON.stringify({password:body.password})});
+   if(!changed.ok)return res.status(400).json({error:'Password could not be changed. Request a new reset link.'});
+   return res.status(200).json({ok:true,message:'Password updated. Sign in with your new password.'});
+  }
   if(body.action==='login'){
    if(typeof body.email!=='string'||typeof body.password!=='string')return res.status(400).json({error:'Enter email and password.'});
    const r=await fetch(base+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:body.email.trim(),password:body.password})});
