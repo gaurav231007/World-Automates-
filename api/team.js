@@ -21,8 +21,14 @@ async function auth(path,options={}){
  return data;
 }
 async function member(userId){
- const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,department_id,permissions,departments(name)&user_id=eq.'+encodeURIComponent(userId));
- return rows?.[0]||null;
+ const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,department_id,permissions&user_id=eq.'+encodeURIComponent(userId));
+ const m=rows?.[0]||null;
+ if(!m)return null;
+ m.departments=null;
+ if(m.department_id!==null&&m.department_id!==undefined){
+  try{const d=await auth('/rest/v1/departments?select=name&id=eq.'+encodeURIComponent(m.department_id));if(d?.[0])m.departments={name:d[0].name};}catch{}
+ }
+ return m;
 }
 async function currentStaff(req){
  const token=staffToken(req);if(!token)return null;
@@ -81,8 +87,11 @@ export default async function handler(req,res){
   }
   if(!ownerSession(req))return res.status(401).json({error:'Owner access required.'});
   if(body.action==='list'){
-   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at,department_id,permissions,departments(name)&order=created_at.desc');
-   return res.status(200).json({members:rows||[]});
+   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at,department_id,permissions&order=created_at.desc');
+   const ids=[...new Set((rows||[]).map(m=>m.department_id).filter(v=>v!==null&&v!==undefined))];
+   let deptMap={};
+   if(ids.length){try{const ds=await auth('/rest/v1/departments?select=id,name&id=in.('+ids.join(',')+')');for(const d of ds||[])deptMap[d.id]=d.name;}catch{}}
+   return res.status(200).json({members:(rows||[]).map(m=>({...m,departments:m.department_id?{name:deptMap[m.department_id]||''}:null}))});
   }
   if(body.action==='departments-list'){
    const rows=await auth('/rest/v1/departments?select=id,name,description,created_at&order=name.asc');
