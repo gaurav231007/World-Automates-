@@ -14,6 +14,16 @@ export default async function handler(req,res){
  if(!ownerSession(req))return res.status(401).json({error:'Owner access required. Sign in again.'});
  try{
   const b=req.body||{},action=b.action;
+  if(action==='image-upload-url'){
+   const name=String(b.filename||'').trim().replace(/[^a-zA-Z0-9._-]/g,'_').slice(-100),type=String(b.content_type||'');
+   if(!name||!/^image\/(jpeg|png|webp|gif|avif)$/.test(type))return res.status(400).json({error:'Upload JPG, PNG, WebP, GIF or AVIF images only.'});
+   if(Number(b.size)>12*1024*1024)return res.status(413).json({error:'Image must be 12 MB or smaller.'});
+   const path=Date.now()+'-'+crypto.randomBytes(5).toString('hex')+'-'+name;
+   const result=await db('/storage/v1/object/upload/sign/wa-site-media/'+encodeURIComponent(path),{method:'POST',body:JSON.stringify({})});
+   const signed=result?.url||result?.signedURL;if(!signed)throw new Error('Could not create image upload link. Check wa-site-media bucket.');
+   const base=process.env.SUPABASE_URL.replace(/\/$/,'');const uploadUrl=String(signed).startsWith('http')?signed:base+String(signed);
+   return res.status(200).json({path,signed_url:uploadUrl,public_url:base+'/storage/v1/object/public/wa-site-media/'+path});
+  }
   if(action==='videos-list'){const rows=await db('/rest/v1/video_assets?select=*&order=created_at.desc');return res.status(200).json({videos:rows||[]});}
   if(action==='video-upload-url'){
    const name=String(b.filename||'').trim().replace(/[^a-zA-Z0-9._-]/g,'_').slice(-100),type=String(b.content_type||'');
