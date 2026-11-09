@@ -7,11 +7,19 @@ function sign(value){return crypto.createHmac('sha256',process.env.ADMIN_SESSION
 function setCookie(res,value,maxAge=60*60*8){res.setHeader('Set-Cookie',`${cookieName}=${value}; HttpOnly; Secure; SameSite=Strict; Path=/api/ Max-Age=${maxAge}`);}
 function clearCookie(res){setCookie(res,'',0);}
 function session(req){
- const raw=(req.headers.cookie||'').split(';').map(v=>v.trim()).find(v=>v.startsWith(cookieName+'='))?.slice(cookieName.length+1);
- if(!raw||!process.env.ADMIN_SESSION_SECRET)return false;
- const [payload,signature]=raw.split('.');
- if(!payload||!signature||!safeEqual(signature,sign(payload)))return false;
- try{const data=JSON.parse(Buffer.from(payload,'base64url').toString());return data.exp>Date.now();}catch{return false;}
+ if(!process.env.ADMIN_SESSION_SECRET)return false;
+ // Older deployments used Path=/api/reviews while newer sessions use Path=/api/.
+ // Browsers can send both cookies; accept any valid signed session, not just the first.
+ const cookies=(req.headers.cookie||'').split(';').map(v=>v.trim()).filter(v=>v.startsWith(cookieName+'='));
+ for(const cookie of cookies){
+  const raw=cookie.slice(cookieName.length+1);
+  const dot=raw.lastIndexOf('.');
+  if(dot<=0)continue;
+  const payload=raw.slice(0,dot),signature=raw.slice(dot+1);
+  if(!safeEqual(signature,sign(payload)))continue;
+  try{const data=JSON.parse(Buffer.from(payload,'base64url').toString());if(data.exp>Date.now())return true;}catch{}
+ }
+ return false;
 }
 async function db(path,options={}){
  const url=process.env.SUPABASE_URL, key=process.env.SUPABASE_SERVICE_ROLE_KEY;
