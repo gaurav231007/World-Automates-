@@ -27,7 +27,7 @@ export default async function handler(req,res){
    return res.status(200).json({path,signed_url:uploadUrl,token:result.token||null,public_url:process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1/object/public/wa-videos/'+path});
   }
   if(action==='video-create'){
-   if(typeof b.title!=='string'||b.title.trim().length<2||typeof b.path!=='string'||!b.path.startsWith(String(Date.now()).slice(0,6))){} 
+   if(typeof b.title!=='string'||b.title.trim().length<2||b.title.trim().length>120)return res.status(400).json({error:'Enter a video title.'});
    const path=String(b.path||'');if(!path||path.includes('..')||path.includes('/'))return res.status(400).json({error:'Invalid uploaded video path.'});
    const rows=await db('/rest/v1/video_assets',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({title:String(b.title||'').trim().slice(0,120),description:String(b.description||'').slice(0,1000),storage_path:path,public_url:process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1/object/public/wa-videos/'+path})});
    return res.status(201).json({video:rows?.[0]||null});
