@@ -21,14 +21,8 @@ async function auth(path,options={}){
  return data;
 }
 async function member(userId){
- const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,department_id,permissions&user_id=eq.'+encodeURIComponent(userId));
- const m=rows?.[0]||null;
- if(!m)return null;
- m.departments=null;
- if(m.department_id!==null&&m.department_id!==undefined){
-  try{const d=await auth('/rest/v1/departments?select=name&id=eq.'+encodeURIComponent(m.department_id));if(d?.[0])m.departments={name:d[0].name};}catch{}
- }
- return m;
+ const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,permissions&user_id=eq.'+encodeURIComponent(userId));
+ return rows?.[0]||null;
 }
 async function currentStaff(req){
  const token=staffToken(req);if(!token)return null;
@@ -87,11 +81,8 @@ export default async function handler(req,res){
   }
   if(!ownerSession(req))return res.status(401).json({error:'Owner access required.'});
   if(body.action==='list'){
-   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at,department_id,permissions&order=created_at.desc');
-   const ids=[...new Set((rows||[]).map(m=>m.department_id).filter(v=>v!==null&&v!==undefined))];
-   let deptMap={};
-   if(ids.length){try{const ds=await auth('/rest/v1/departments?select=id,name&id=in.('+ids.join(',')+')');for(const d of ds||[])deptMap[d.id]=d.name;}catch{}}
-   return res.status(200).json({members:(rows||[]).map(m=>({...m,departments:m.department_id?{name:deptMap[m.department_id]||''}:null}))});
+   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at,permissions&order=created_at.desc');
+   return res.status(200).json({members:rows||[]});
   }
   if(body.action==='departments-list'){
    const rows=await auth('/rest/v1/departments?select=id,name,description,created_at&order=name.asc');
@@ -113,9 +104,8 @@ export default async function handler(req,res){
    const permissions=body.permissions&&typeof body.permissions==='object'&&!Array.isArray(body.permissions)?body.permissions:{};
    const allowed=['tasks','projects','enquiries','reviews','website','team'];
    const clean={};for(const key of allowed)clean[key]=permissions[key]===true;
-   const departmentId=body.department_id===''||body.department_id==null?null:Number(body.department_id);
    if(departmentId!==null&&!Number.isInteger(departmentId))return res.status(400).json({error:'Invalid department.'});
-   const update={department_id:departmentId,permissions:clean};
+   const update={permissions:clean};
    if(typeof body.role==='string'&&body.role.trim().length>=2&&body.role.trim().length<=60)update.role=body.role.trim();
    const rows=await auth('/rest/v1/team_members?user_id=eq.'+encodeURIComponent(body.user_id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(update)});
    return res.status(200).json({member:rows?.[0]||null});
@@ -133,7 +123,7 @@ export default async function handler(req,res){
    if(existingUser){user=existingUser;}
    else{user=await auth('/auth/v1/admin/users',{method:'POST',body:JSON.stringify({email:cleanEmail,password,email_confirm:true,user_metadata:{full_name:name.trim()}})});createdNow=true;}
    try{
-    await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:cleanEmail,role:cleanRole,active:true,department_id:body.department_id?Number(body.department_id):null,permissions:body.permissions&&typeof body.permissions==='object'?body.permissions:{tasks:true,projects:false,enquiries:false,reviews:false,website:false,team:false}})});
+    await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:cleanEmail,role:cleanRole,active:true,permissions:body.permissions&&typeof body.permissions==='object'?body.permissions:{tasks:true,projects:false,enquiries:false,reviews:false,website:false,team:false}})});
    }catch(e){if(createdNow)await auth('/auth/v1/admin/users/'+user.id,{method:'DELETE'}).catch(()=>{});throw e;}
    return res.status(201).json({ok:true,message:existingUser?'Existing registered email linked to the team. Its current password remains unchanged.':'Employee account created.'});
   }
