@@ -111,11 +111,20 @@ export default async function handler(req,res){
   }
   if(body.action==='create'){
    const {name,email,password,role}=body;
-   if(typeof name!=='string'||name.trim().length<2||name.length>100||typeof email!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||typeof password!=='string'||password.length<10||password.length>128||!['manager','sales','developer','viewer'].includes(role))return res.status(400).json({error:'Enter a valid name, email, role and password (minimum 10 characters).'});
-   const user=await auth('/auth/v1/admin/users',{method:'POST',body:JSON.stringify({email:email.trim(),password,email_confirm:true,user_metadata:{full_name:name.trim()}})});
-   try{await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:email.trim(),role,active:true,department_id:body.department_id?Number(body.department_id):null,permissions:{tasks:true,projects:false,enquiries:false,reviews:false,website:false,team:false}})});}
-   catch(e){await auth('/auth/v1/admin/users/'+user.id,{method:'DELETE'}).catch(()=>{});throw e;}
-   return res.status(201).json({ok:true,message:'Employee account created.'});
+   const cleanEmail=typeof email==='string'?email.trim().toLowerCase():'';
+   const cleanRole=typeof role==='string'?role.trim().slice(0,60):'';
+   if(typeof name!=='string'||name.trim().length<2||name.length>100||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)||typeof password!=='string'||password.length<10||password.length>128||cleanRole.length<2)return res.status(400).json({error:'Enter name, valid email, password (10+ characters) and a role.'});
+   const existingRows=await auth('/rest/v1/team_members?select=user_id&email=eq.'+encodeURIComponent(cleanEmail));
+   if(existingRows?.length)return res.status(409).json({error:'This email is already added as an employee. Edit that employee from the team list instead.'});
+   let user,createdNow=false;
+   const authUsers=await auth('/auth/v1/admin/users?page=1&per_page=1000');
+   const existingUser=(authUsers?.users||[]).find(u=>(u.email||'').toLowerCase()===cleanEmail);
+   if(existingUser){user=existingUser;}
+   else{user=await auth('/auth/v1/admin/users',{method:'POST',body:JSON.stringify({email:cleanEmail,password,email_confirm:true,user_metadata:{full_name:name.trim()}})});createdNow=true;}
+   try{
+    await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:cleanEmail,role:cleanRole,active:true,department_id:body.department_id?Number(body.department_id):null,permissions:body.permissions&&typeof body.permissions==='object'?body.permissions:{tasks:true,projects:false,enquiries:false,reviews:false,website:false,team:false}})});
+   }catch(e){if(createdNow)await auth('/auth/v1/admin/users/'+user.id,{method:'DELETE'}).catch(()=>{});throw e;}
+   return res.status(201).json({ok:true,message:existingUser?'Existing registered email linked to the team. Its current password remains unchanged.':'Employee account created.'});
   }
   if(body.action==='set-active'){
    if(typeof body.user_id!=='string'||typeof body.active!=='boolean')return res.status(400).json({error:'Invalid team member update.'});
