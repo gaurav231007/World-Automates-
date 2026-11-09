@@ -21,7 +21,7 @@ async function auth(path,options={}){
  return data;
 }
 async function member(userId){
- const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,permissions&user_id=eq.'+encodeURIComponent(userId));
+ const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active&user_id=eq.'+encodeURIComponent(userId));
  return rows?.[0]||null;
 }
 async function currentStaff(req){
@@ -81,7 +81,7 @@ export default async function handler(req,res){
   }
   if(!ownerSession(req))return res.status(401).json({error:'Owner access required.'});
   if(body.action==='list'){
-   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at,permissions&order=created_at.desc');
+   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at&order=created_at.desc');
    return res.status(200).json({members:rows||[]});
   }
   if(body.action==='departments-list'){
@@ -101,11 +101,7 @@ export default async function handler(req,res){
   }
   if(body.action==='member-config'){
    if(typeof body.user_id!=='string'||!body.user_id)return res.status(400).json({error:'Choose an employee.'});
-   const permissions=body.permissions&&typeof body.permissions==='object'&&!Array.isArray(body.permissions)?body.permissions:{};
-   const allowed=['tasks','projects','enquiries','reviews','website','team'];
-   const clean={};for(const key of allowed)clean[key]=permissions[key]===true;
-   if(departmentId!==null&&!Number.isInteger(departmentId))return res.status(400).json({error:'Invalid department.'});
-   const update={permissions:clean};
+   const update={};
    if(typeof body.role==='string'&&body.role.trim().length>=2&&body.role.trim().length<=60)update.role=body.role.trim();
    const rows=await auth('/rest/v1/team_members?user_id=eq.'+encodeURIComponent(body.user_id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(update)});
    return res.status(200).json({member:rows?.[0]||null});
@@ -123,7 +119,7 @@ export default async function handler(req,res){
    if(existingUser){user=existingUser;}
    else{user=await auth('/auth/v1/admin/users',{method:'POST',body:JSON.stringify({email:cleanEmail,password,email_confirm:true,user_metadata:{full_name:name.trim()}})});createdNow=true;}
    try{
-    await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:cleanEmail,role:cleanRole,active:true,permissions:body.permissions&&typeof body.permissions==='object'?body.permissions:{tasks:true,projects:false,enquiries:false,reviews:false,website:false,team:false}})});
+    await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:cleanEmail,role:cleanRole,active:true})});
    }catch(e){if(createdNow)await auth('/auth/v1/admin/users/'+user.id,{method:'DELETE'}).catch(()=>{});throw e;}
    return res.status(201).json({ok:true,message:existingUser?'Existing registered email linked to the team. Its current password remains unchanged.':'Employee account created.'});
   }
