@@ -4,7 +4,7 @@ const cookieName = 'wa_admin';
 const b64 = value => Buffer.from(value).toString('base64url');
 const safeEqual = (a,b) => { const x=Buffer.from(String(a)); const y=Buffer.from(String(b)); return x.length===y.length && crypto.timingSafeEqual(x,y); };
 function sign(value){return crypto.createHmac('sha256',process.env.ADMIN_SESSION_SECRET).update(value).digest('base64url');}
-function setCookie(res,value,maxAge=60*60*8){res.setHeader('Set-Cookie',`${cookieName}=${value}; HttpOnly; Secure; SameSite=Strict; Path=/api/ Max-Age=${maxAge}`);}
+function setCookie(res,value,maxAge=60*60*8){res.setHeader('Set-Cookie',`${cookieName}=${value}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`);}
 function clearCookie(res){setCookie(res,'',0);}
 function session(req){
  if(!process.env.ADMIN_SESSION_SECRET)return false;
