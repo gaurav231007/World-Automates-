@@ -23,7 +23,7 @@ export default async function handler(req,res){
    const result=await db('/storage/v1/object/upload/sign/wa-videos/'+encodeURIComponent(path),{method:'POST',body:JSON.stringify({})});
    const signed=result?.url||result?.signedURL;
    if(!signed)throw new Error('Could not create upload link. Check the wa-videos storage bucket.');
-   const uploadUrl=String(signed).startsWith('http')?signed:base+String(signed);
+   const base=process.env.SUPABASE_URL.replace(/\/$/,'');const uploadUrl=String(signed).startsWith('http')?signed:base+String(signed);
    return res.status(200).json({path,signed_url:uploadUrl,token:result.token||null,public_url:process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1/object/public/wa-videos/'+path});
   }
   if(action==='video-create'){
@@ -39,6 +39,13 @@ export default async function handler(req,res){
    await fetch(base+'/storage/v1/object/wa-videos/'+rows[0].storage_path,{method:'DELETE',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+process.env.SUPABASE_SERVICE_ROLE_KEY}});
    await db('/rest/v1/video_assets?id=eq.'+b.id,{method:'DELETE'});return res.status(200).json({ok:true});
   }
+  if(action==='sections-list'){const rows=await db('/rest/v1/marketing_sections?select=*&order=created_at.desc');return res.status(200).json({sections:rows||[]});}
+  if(action==='section-create'||action==='section-update'){
+   if(typeof b.name!=='string'||b.name.trim().length<2)return res.status(400).json({error:'Section name is required.'});
+   const payload={name:b.name.trim().slice(0,80),type:String(b.type||'Custom').slice(0,40),description:String(b.description||'').slice(0,500),url:String(b.url||'').slice(0,1000),status:['active','paused','archived'].includes(b.status)?b.status:'active',spend:Math.max(0,Number(b.spend)||0),impressions:Math.max(0,Math.floor(Number(b.impressions)||0)),clicks:Math.max(0,Math.floor(Number(b.clicks)||0)),conversions:Math.max(0,Math.floor(Number(b.conversions)||0))};
+   let rows;if(action==='section-create')rows=await db('/rest/v1/marketing_sections',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});else{if(!idOk(b.id))return res.status(400).json({error:'Invalid section.'});rows=await db('/rest/v1/marketing_sections?id=eq.'+b.id,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});}return res.status(200).json({section:rows?.[0]||null});
+  }
+  if(action==='section-delete'){if(!idOk(b.id))return res.status(400).json({error:'Invalid section.'});await db('/rest/v1/marketing_sections?id=eq.'+b.id,{method:'DELETE'});return res.status(200).json({ok:true});}
   if(action==='campaigns-list'){const rows=await db('/rest/v1/marketing_campaigns?select=*&order=created_at.desc');return res.status(200).json({campaigns:rows||[]});}
   if(action==='campaign-create'||action==='campaign-update'){
    if(typeof b.name!=='string'||b.name.trim().length<2)return res.status(400).json({error:'Campaign name is required.'});
