@@ -123,6 +123,11 @@ export default async function handler(req,res){
    }catch(e){if(createdNow)await auth('/auth/v1/admin/users/'+user.id,{method:'DELETE'}).catch(()=>{});throw e;}
    return res.status(201).json({ok:true,message:existingUser?'Existing registered email linked to the team. Its current password remains unchanged.':'Employee account created.'});
   }
+  if(body.action==='member-delete'){
+   if(typeof body.user_id!=='string'||!/^[0-9a-f-]{36}$/i.test(body.user_id))return res.status(400).json({error:'Choose a valid employee.'});
+   await auth('/auth/v1/admin/users/'+encodeURIComponent(body.user_id),{method:'DELETE'});
+   return res.status(200).json({ok:true});
+  }
   if(body.action==='set-active'){
    if(typeof body.user_id!=='string'||typeof body.active!=='boolean')return res.status(400).json({error:'Invalid team member update.'});
    const rows=await auth('/rest/v1/team_members?user_id=eq.'+encodeURIComponent(body.user_id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({active:body.active})});
