@@ -106,7 +106,9 @@ export default async function handler(req,res){
    const clean={};for(const key of allowed)clean[key]=permissions[key]===true;
    const departmentId=body.department_id===''||body.department_id==null?null:Number(body.department_id);
    if(departmentId!==null&&!Number.isInteger(departmentId))return res.status(400).json({error:'Invalid department.'});
-   const rows=await auth('/rest/v1/team_members?user_id=eq.'+encodeURIComponent(body.user_id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({department_id:departmentId,permissions:clean})});
+   const update={department_id:departmentId,permissions:clean};
+   if(typeof body.role==='string'&&body.role.trim().length>=2&&body.role.trim().length<=60)update.role=body.role.trim();
+   const rows=await auth('/rest/v1/team_members?user_id=eq.'+encodeURIComponent(body.user_id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(update)});
    return res.status(200).json({member:rows?.[0]||null});
   }
   if(body.action==='create'){
