@@ -55,7 +55,7 @@ export default async function handler(req,res){
    }
    if(body.action==='content-save'){
     if(!body.settings||typeof body.settings!=='object'||Array.isArray(body.settings))return res.status(400).json({error:'Invalid content settings.'});
-    const allowed=['announcement','heroEyebrow','heroTitle','heroSummary','statementTitle','statementCopy1','statementCopy2','contactTitle','contactIntro','footerTagline','services'];
+    const allowed=['announcement','heroEyebrow','heroTitle','heroSummary','heroImage','workImage1','workImage2','workImage3','aboutImage','contactImage','statementTitle','statementCopy1','statementCopy2','contactTitle','contactIntro','footerTagline','services'];
     const rows=allowed.filter(k=>body.settings[k]!==undefined).map(key=>({key,value:body.settings[key]}));
     if(rows.some(r=>typeof r.value!=='string'||r.value.length>3000))return res.status(400).json({error:'Content values must be text under 3000 characters.'});
     for(const row of rows)await db('site_settings?on_conflict=key',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
