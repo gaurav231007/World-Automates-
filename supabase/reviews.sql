@@ -93,3 +93,7 @@ alter table public.team_members
 insert into public.departments(name,description)
 values ('Sales','Enquiries and client communication'),('Development','Product and delivery work'),('Operations','Internal operations')
 on conflict (name) do nothing;
+
+-- Employee role names are custom text labels (Sales Lead, HR, Designer, etc.).
+-- Run this migration on existing projects as well.
+alter table public.team_members drop constraint if exists team_members_role_check;
