@@ -23,7 +23,8 @@ export default async function handler(req,res){
    const result=await db('/storage/v1/object/upload/sign/wa-videos/'+encodeURIComponent(path),{method:'POST',body:JSON.stringify({})});
    const signed=result?.url||result?.signedURL;
    if(!signed)throw new Error('Could not create upload link. Check the wa-videos storage bucket.');
-   return res.status(200).json({path,signed_url:signed,token:result.token||null,public_url:process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1/object/public/wa-videos/'+path});
+   const uploadUrl=String(signed).startsWith('http')?signed:base+String(signed);
+   return res.status(200).json({path,signed_url:uploadUrl,token:result.token||null,public_url:process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1/object/public/wa-videos/'+path});
   }
   if(action==='video-create'){
    if(typeof b.title!=='string'||b.title.trim().length<2||typeof b.path!=='string'||!b.path.startsWith(String(Date.now()).slice(0,6))){} 
