@@ -21,7 +21,7 @@ async function auth(path,options={}){
  return data;
 }
 async function member(userId){
- const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active&user_id=eq.'+encodeURIComponent(userId));
+ const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,department_id,permissions,departments(name)&user_id=eq.'+encodeURIComponent(userId));
  return rows?.[0]||null;
 }
 async function currentStaff(req){
@@ -81,14 +81,39 @@ export default async function handler(req,res){
   }
   if(!ownerSession(req))return res.status(401).json({error:'Owner access required.'});
   if(body.action==='list'){
-   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at&order=created_at.desc');
+   const rows=await auth('/rest/v1/team_members?select=user_id,full_name,email,role,active,created_at,department_id,permissions,departments(name)&order=created_at.desc');
    return res.status(200).json({members:rows||[]});
+  }
+  if(body.action==='departments-list'){
+   const rows=await auth('/rest/v1/departments?select=id,name,description,created_at&order=name.asc');
+   return res.status(200).json({departments:rows||[]});
+  }
+  if(body.action==='department-create'||body.action==='department-update'){
+   if(typeof body.name!=='string'||body.name.trim().length<2||body.name.trim().length>60)return res.status(400).json({error:'Department name must be 2–60 characters.'});
+   const payload={name:body.name.trim(),description:String(body.description||'').trim().slice(0,500)};
+   if(body.action==='department-create'){
+    const rows=await auth('/rest/v1/departments',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
+    return res.status(201).json({department:rows?.[0]||null});
+   }
+   if(!/^\\d+$/.test(String(body.id)))return res.status(400).json({error:'Choose a valid department.'});
+   const rows=await auth('/rest/v1/departments?id=eq.'+encodeURIComponent(body.id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
+   return res.status(200).json({department:rows?.[0]||null});
+  }
+  if(body.action==='member-config'){
+   if(typeof body.user_id!=='string'||!body.user_id)return res.status(400).json({error:'Choose an employee.'});
+   const permissions=body.permissions&&typeof body.permissions==='object'&&!Array.isArray(body.permissions)?body.permissions:{};
+   const allowed=['tasks','projects','enquiries','reviews','website','team'];
+   const clean={};for(const key of allowed)clean[key]=permissions[key]===true;
+   const departmentId=body.department_id===''||body.department_id==null?null:Number(body.department_id);
+   if(departmentId!==null&&!Number.isInteger(departmentId))return res.status(400).json({error:'Invalid department.'});
+   const rows=await auth('/rest/v1/team_members?user_id=eq.'+encodeURIComponent(body.user_id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({department_id:departmentId,permissions:clean})});
+   return res.status(200).json({member:rows?.[0]||null});
   }
   if(body.action==='create'){
    const {name,email,password,role}=body;
    if(typeof name!=='string'||name.trim().length<2||name.length>100||typeof email!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||typeof password!=='string'||password.length<10||password.length>128||!['manager','sales','developer','viewer'].includes(role))return res.status(400).json({error:'Enter a valid name, email, role and password (minimum 10 characters).'});
    const user=await auth('/auth/v1/admin/users',{method:'POST',body:JSON.stringify({email:email.trim(),password,email_confirm:true,user_metadata:{full_name:name.trim()}})});
-   try{await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:email.trim(),role,active:true})});}
+   try{await auth('/rest/v1/team_members',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:user.id,full_name:name.trim(),email:email.trim(),role,active:true,department_id:body.department_id?Number(body.department_id):null,permissions:{tasks:true,projects:false,enquiries:false,reviews:false,website:false,team:false}})});}
    catch(e){await auth('/auth/v1/admin/users/'+user.id,{method:'DELETE'}).catch(()=>{});throw e;}
    return res.status(201).json({ok:true,message:'Employee account created.'});
   }
