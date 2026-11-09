@@ -363,3 +363,84 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .staff-empty p{font-size:12px;color:var(--muted)}
 .staff-notice{display:block;color:#9a573e;margin-top:20px;min-height:18px}
 @media(max-width:700px){.staff-dashboard{padding:30px 6% 65px}.staff-welcome{align-items:flex-start}.staff-welcome h1{font-size:52px}.staff-stats{grid-template-columns:repeat(2,1fr);margin:20px 0 48px}.staff-stats article{min-height:92px;padding:15px}.staff-section-head{align-items:center}.staff-section-head h2{font-size:35px}.staff-task{grid-template-columns:1fr;gap:18px;padding:20px 0}.staff-task-actions{max-width:100%}.staff-welcome>button{font-size:8px;padding:10px}}
+
+
+/* Responsive Studio OS: desktop, tablet and phone layouts */
+.admin-page{width:100%;min-width:0;overflow-x:clip}
+.admin-page>header{width:100%;max-width:1600px;margin:0 auto}
+.admin-reviews{width:min(100% - 10.4%,1440px);max-width:1440px;margin:0 auto;min-width:0}
+.admin-title{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;padding:42px 0 28px;border-bottom:1px solid var(--line)}
+.admin-title h1{font:800 clamp(52px,6vw,92px)/.92 var(--display);letter-spacing:-.085em;margin:0}
+.admin-title h1 em{font:italic 400 1em Georgia;color:var(--blue)}
+.admin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:18px 0;border-bottom:1px solid var(--line);font:9px var(--mono);color:var(--muted)}
+.admin-module{min-width:0}
+.admin-review{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:start;padding:22px 0;border-bottom:1px solid var(--line)}
+.admin-review>div:first-child{min-width:0;overflow-wrap:anywhere}
+.admin-review-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.admin-review-actions button{border:1px solid var(--line);background:transparent;padding:10px 12px;font:9px var(--mono);cursor:pointer}
+.admin-login{width:min(680px,calc(100% - 48px));margin:clamp(45px,9vh,120px) auto;padding:clamp(28px,5vw,64px);border:1px solid var(--line);background:#f8f7f2}
+.admin-login h1{font:800 clamp(58px,8vw,96px)/.92 var(--display);letter-spacing:-.085em;margin:0 0 34px}
+.admin-login h1 em{font:italic 400 1em Georgia;color:var(--blue)}
+.admin-login input{width:100%;min-width:0;padding:16px 0;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);margin:12px 0 20px}
+.admin-login>button:not(.team-text-button){width:100%;padding:18px;background:var(--blue);border:0;color:#fff;font:10px var(--mono);letter-spacing:.6px;cursor:pointer}
+.admin-login small{display:block;min-height:20px;margin-top:14px;color:#925b45}
+.content-editor{width:100%;max-width:900px;padding:clamp(18px,3vw,30px);margin:20px 0;background:#e9e7df;border:1px solid var(--line)}
+.content-editor h3{font:700 22px var(--display);margin:0 0 18px}
+.content-field{min-width:0}
+.content-field input,.content-field select,.content-field textarea{min-width:0;max-width:100%}
+.staff-dashboard{width:min(100% - 10.4%,1440px)}
+.staff-welcome{min-width:0}
+.staff-welcome>div{min-width:0}
+.staff-welcome h1{overflow-wrap:anywhere}
+.staff-task{min-width:0}
+.staff-task-main{min-width:0;overflow-wrap:anywhere}
+
+@media (min-width:1101px){
+ .menu-trigger{display:none}
+ .navigation{display:flex}
+ .hero-layout{grid-template-columns:minmax(0,1.03fr) minmax(0,.97fr)}
+ .hero-message h1{font-size:clamp(76px,8.2vw,140px)}
+ .hero-object{height:clamp(500px,42vw,680px)}
+ .section-pad{padding-left:clamp(7%,calc((100vw - 1400px)/2),10%);padding-right:clamp(7%,calc((100vw - 1400px)/2),10%)}
+}
+@media (min-width:651px) and (max-width:1100px){
+ .announcement{padding-left:4%;padding-right:4%;font-size:8px}
+ .main-nav{padding:0 4%}
+ .navigation{gap:20px}
+ .hero-v2{padding-left:4%;padding-right:4%}
+ .hero-layout{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);min-height:560px;gap:18px}
+ .hero-message h1{font-size:clamp(60px,8vw,88px);white-space:normal}
+ .hero-object{height:clamp(390px,48vw,510px);min-width:0}
+ .hero-proof{gap:10px;flex-wrap:wrap;font-size:7px}
+ .section-pad{padding:78px 5%}
+ .statement-content,.work-heading,.cap-head,.contact-layout{gap:6%}
+ .admin-reviews,.staff-dashboard{width:92%}
+ .admin-title h1{font-size:clamp(54px,7vw,76px)}
+ .admin-tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin}
+ .admin-tabs button{white-space:nowrap}
+ .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .admin-review{grid-template-columns:minmax(0,1fr)}
+ .admin-review-actions{justify-content:flex-start}
+ .staff-task{grid-template-columns:minmax(0,1fr) 190px}
+}
+@media (max-width:650px){
+ .admin-reviews,.staff-dashboard{width:90%;padding-left:0;padding-right:0}
+ .admin-title{align-items:flex-start;flex-direction:column}
+ .admin-title h1{font-size:clamp(48px,13vw,68px)}
+ .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+ .admin-tabs{display:flex;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap;scrollbar-width:thin}
+ .admin-tabs button{flex:0 0 auto}
+ .admin-review{grid-template-columns:minmax(0,1fr);gap:15px}
+ .admin-review-actions{justify-content:flex-start}
+ .admin-module-head{align-items:flex-start}
+ .admin-login{width:calc(100% - 28px);margin:36px auto;padding:28px 22px}
+ .admin-login h1{font-size:clamp(54px,15vw,72px)}
+ .content-editor{padding:18px 14px}
+ .staff-welcome{flex-direction:column;align-items:flex-start}
+ .staff-welcome h1{font-size:clamp(46px,13vw,58px)}
+ .staff-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .staff-section-head{align-items:flex-start;flex-direction:column}
+ .staff-section-head h2{font-size:clamp(31px,9vw,40px)}
+ .staff-task{grid-template-columns:minmax(0,1fr);gap:14px}
+ .staff-task-actions{width:100%}
+}
