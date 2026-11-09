@@ -147,3 +147,9 @@ create table if not exists public.marketing_sections (
  updated_at timestamptz not null default now()
 );
 alter table public.marketing_sections enable row level security;
+
+
+-- Public website image bucket. Uploads are owner-authorized through signed URLs.
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
+values ('wa-site-media','wa-site-media',true,12582912,array['image/jpeg','image/png','image/webp','image/gif','image/avif'])
+on conflict (id) do update set public=true,file_size_limit=12582912,allowed_mime_types=array['image/jpeg','image/png','image/webp','image/gif','image/avif'];
