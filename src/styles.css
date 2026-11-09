@@ -444,3 +444,19 @@ html,body,#root{max-width:100%;overflow-x:clip}
  .staff-task{grid-template-columns:minmax(0,1fr);gap:14px}
  .staff-task-actions{width:100%}
 }
+
+/* Studio marketing and media modules */
+.studio-video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:28px}
+.studio-video-card{min-width:0;background:#e9e7df;border:1px solid var(--line)}
+.studio-video-card video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#151820}
+.studio-video-card>div{padding:16px;min-width:0}
+.studio-video-card b{font:700 16px var(--display);overflow-wrap:anywhere}
+.studio-video-card p{font-size:12px;line-height:1.6;color:var(--muted)}
+.studio-video-card small{font:9px var(--mono);color:var(--muted)}
+.studio-video-card button{display:block;margin-top:14px;padding:9px 12px;border:1px solid var(--line);background:transparent;font:9px var(--mono);cursor:pointer}
+.campaign-dates{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.campaign-dates label{display:flex;flex-direction:column;gap:8px;font:8px var(--mono);color:var(--muted)}
+.campaign-dates input{min-width:0;padding:12px;border:1px solid var(--line);background:transparent}
+.campaign-card .admin-review-actions select{max-width:150px;min-width:0;padding:9px;border:1px solid var(--line);background:transparent;font:9px var(--mono)}
+@media(max-width:950px){.studio-video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.studio-video-grid{grid-template-columns:1fr}.campaign-dates{grid-template-columns:1fr}.campaign-card .admin-review-actions select{max-width:100%;width:100%}}
